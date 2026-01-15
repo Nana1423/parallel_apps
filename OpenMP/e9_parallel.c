@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
+#include <time.h>
 
 #define N 5
 
@@ -20,7 +21,7 @@ int main ()
    }
 
    /* MULTIPLICACION DE LAS MATRICES */
-    #pragma omp parallel  for private(j,m) shared(A,B,C)
+    #pragma omp parallel for private(j,m) shared(A,B,C)
    for(i=0;i<N;i++) {
       for(j=0;j<N;j++) {
          C[i][j]=0.; // colocar el valor inicial para el componente C[i][j] = 0
