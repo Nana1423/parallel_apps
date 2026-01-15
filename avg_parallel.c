@@ -42,10 +42,6 @@ int main(int argc, char** argv) {
     }
     float myavg = mysum / N;
 
-    // Cada proceso muestra su información
-    printf("Process %d with row %d – min: %f; max: %f; avg: %f\n", 
-            world_rank, world_rank, mymin, mymax, myavg);
-
     // Prepara datos locales para recolectar (3 elementos)
     float local_stats[3] = {mymin, mymax, myavg};
     float *all_stats = NULL;
@@ -63,6 +59,20 @@ int main(int argc, char** argv) {
         float global_min = FLT_MAX;
         float global_max = -FLT_MAX;
         float global_avg_sum = 0.0f;
+
+        // El maestro imprime los resultados de cada proceso
+        for (int i = 0; i < world_size; i++) {
+            float r_min = all_stats[i * 3];
+            float r_max = all_stats[i * 3 + 1];
+            float r_avg = all_stats[i * 3 + 2];
+
+            printf("Process %d with row %d – min: %f; max: %f; avg: %f\n", i, i, r_min, r_max, r_avg);
+
+            // Aprovechamos el ciclo para calcular los globales
+            if (r_min < global_min) global_min = r_min;
+            if (r_max > global_max) global_max = r_max;
+            global_avg_sum += r_avg;
+        }
 
         for (int i = 0; i < world_size; i++) {
             if (all_stats[i * 3] < global_min) global_min = all_stats[i * 3];     // Mínimo de mínimos
