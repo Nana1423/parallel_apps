@@ -7,16 +7,16 @@
 int main(int argc, char** argv) {
     MPI_Init(&argc, &argv);
 
-    int world_rank, world_size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    int id, size;
+    MPI_Comm_rank(MPI_COMM_WORLD, &id);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     // N es igual al número de procesos
-    int N = world_size;
+    int N = size;
     float *matrix = NULL;
     
     // El proceso maestro crea y llena la matriz NxN
-    if (world_rank == 0) {
+    if (id == 0) {
         srand(time(NULL));
         matrix = (float *)malloc(sizeof(float) * N * N);
         for (int i = 0; i < N * N; i++) {
@@ -46,22 +46,21 @@ int main(int argc, char** argv) {
     float local_stats[3] = {mymin, mymax, myavg};
     float *all_stats = NULL;
 
-    if (world_rank == 0) {
-        all_stats = (float *)malloc(sizeof(float) * 3 * world_size);
+    if (id == 0) {
+        all_stats = (float *)malloc(sizeof(float) * 3 * size);
     }
 
     // Colecta todos los arreglos de 3 elementos en la raíz
     MPI_Gather(local_stats, 3, MPI_FLOAT, all_stats, 3, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
     // El proceso raíz calcula los valores globales
-    MPI_Barrier(MPI_COMM_WORLD);
-    if (world_rank == 0) {
+    if (id == 0) {
         float global_min = FLT_MAX;
         float global_max = -FLT_MAX;
         float global_avg_sum = 0.0f;
 
         // El maestro imprime los resultados de cada proceso
-        for (int i = 0; i < world_size; i++) {
+        for (int i = 0; i < size; i++) {
             float r_min = all_stats[i * 3];
             float r_max = all_stats[i * 3 + 1];
             float r_avg = all_stats[i * 3 + 2];
@@ -74,16 +73,10 @@ int main(int argc, char** argv) {
             global_avg_sum += r_avg;
         }
 
-        for (int i = 0; i < world_size; i++) {
-            if (all_stats[i * 3] < global_min) global_min = all_stats[i * 3];     // Mínimo de mínimos
-            if (all_stats[i * 3 + 1] > global_max) global_max = all_stats[i * 3 + 1]; // Máximo de máximos
-            global_avg_sum += all_stats[i * 3 + 2];                              // Suma de promedios
-        }
-
         printf("\n--- Global Results ---\n");
         printf("Global Min: %f\n", global_min);
         printf("Global Max: %f\n", global_max);
-        printf("Global Avg of Averages: %f\n", global_avg_sum / world_size);
+        printf("Global Avg of Averages: %f\n", global_avg_sum / size);
 
         free(matrix);
         free(all_stats);
