@@ -11,6 +11,8 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    printf("Process %d of %d is alive.\n", id, size);
+
     // N es igual al número de procesos
     int N = size;
     float *matrix = NULL;
