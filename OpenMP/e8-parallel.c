@@ -12,7 +12,7 @@ void main() {
 	 step = 1.0/(double) num_steps;
      omp_set_num_threads(n_hilos);
 	 
-     #pragma omp parallel for reduction(+:sum) private(x)
+     #pragma omp parallel for reduction(+:sum) private(x,i)
 	 for (i=0; i< num_steps; i++) {
 		 x = (i+0.5)*step;            // Variable privada x
 		 sum = sum + 4.0/(1.0 + x*x); // Variable compartida sum
