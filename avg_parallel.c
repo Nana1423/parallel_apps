@@ -58,6 +58,7 @@ int main(int argc, char** argv) {
     MPI_Gather(local_stats, 3, MPI_FLOAT, all_stats, 3, MPI_FLOAT, 0, MPI_COMM_WORLD);
 
     // El proceso raíz calcula los valores globales
+    MPI_Barrier(MPI_COMM_WORLD);
     if (world_rank == 0) {
         float global_min = FLT_MAX;
         float global_max = -FLT_MAX;
