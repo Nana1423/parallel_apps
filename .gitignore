@@ -1,0 +1,30 @@
+# --- Ejecutables ---
+# Bloquea archivos sin extensión (común en Linux/macOS para ejecutables)
+*
+!*.*
+!*/
+
+# Bloquea ejecutables específicos de Windows
+*.exe
+*.out
+*.app
+
+# --- Archivos de Compilación (Objetos y Librerías) ---
+*.o
+*.obj
+*.a
+*.la
+*.lo
+*.so
+*.dll
+*.dylib
+
+# --- Directorios de salida comunes ---
+dist/
+build/
+bin/
+
+# --- Archivos de depuración y logs ---
+*.dSYM/
+*.log
+gmon.out
